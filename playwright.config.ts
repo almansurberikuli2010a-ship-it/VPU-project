@@ -1,0 +1,28 @@
+import { defineConfig } from "@playwright/test";
+export default defineConfig({
+  testDir: "./tests",
+  testMatch: "**/*.spec.ts",
+  workers: 1,
+  use: {
+    baseURL: "http://127.0.0.1:4123",
+    viewport: { width: 1440, height: 1000 },
+    launchOptions: {
+      ...(process.env.UI_CHROMIUM_PATH
+        ? { executablePath: process.env.UI_CHROMIUM_PATH }
+        : {}),
+      args: [
+        "--no-sandbox",
+        "--disable-dev-shm-usage",
+        "--disable-gpu",
+        "--no-zygote",
+      ],
+    },
+  },
+  webServer: {
+    command: "node dist/server/index.js",
+    url: "http://127.0.0.1:4123/api/health",
+    reuseExistingServer: false,
+    env: { PORT: "4123", APP_ORIGIN: "http://127.0.0.1:4123" },
+  },
+  reporter: "list",
+});
